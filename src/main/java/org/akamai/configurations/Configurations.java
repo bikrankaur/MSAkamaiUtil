@@ -63,6 +63,16 @@ public class Configurations {
 	private String TargetServerAsset1H8;
 	private String TargetServerShopSearchH5;
 	private String TargetServerShopSearchH8;
+	private Integer DataCenterH5;
+	private Integer DataCenterH8;
+	
+	private String stageHostHeaders;
+	private String prodHostHeaders;
+	private String prodHostHeadersApi;
+	private String prodHostHeadersCs;
+	private String prodHostHeadersStore;
+	private String prodHostHeadersAsset1;
+	private String prodHostHeadersAsset2;
 
 	public String getStagetargetServerCsH5() {
 		return StagetargetServerCsH5;
@@ -150,9 +160,6 @@ public class Configurations {
 
 	public void setStagetargetServerAsset1H8(String stagetargetServerAsset1H8) {
 		StagetargetServerAsset1H8 = stagetargetServerAsset1H8;
-	}
-
-	public void setAkamaiAsset1(String akamaiAsset1) {
 	}
 
 	public String getAkamaiCs() {
@@ -315,14 +322,6 @@ public class Configurations {
 	public void setStagetargetServerStoreH8(String stagetargetServerStoreH8) {
 		StagetargetServerStoreH8 = stagetargetServerStoreH8;
 	}
-	
-	/**
-	 * @return the akamaiAsset1
-	 */
-	public String getAkamaiAsset1() {
-		return akamaiAsset1;
-	}
-
 	/**
 	 * @return the akamaiCheckCs
 	 */
@@ -601,6 +600,146 @@ public class Configurations {
 	 */
 	public void setTargetServerShopSearchH8(String targetServerShopSearchH8) {
 		TargetServerShopSearchH8 = targetServerShopSearchH8;
+	}
+	
+	/**
+	 * @return the dataCenterH5
+	 */
+	public Integer getDataCenterH5() {
+		return DataCenterH5;
+	}
+
+	/**
+	 * @param dataCenterH5 the dataCenterH5 to set
+	 */
+	public void setDataCenterH5(Integer dataCenterH5) {
+		DataCenterH5 = dataCenterH5;
+	}
+
+	/**
+	 * @return the dataCentersH8
+	 */
+	public Integer getDataCenterH8() {
+		return DataCenterH8;
+	}
+
+	/**
+	 * @param dataCentersH8 the dataCentersH8 to set
+	 */
+	public void setDataCenterH8(Integer dataCenterH8) {
+		DataCenterH8 = dataCenterH8;
+	}
+
+	/**
+	 * @return the prodHostHeaders
+	 */
+	public String getProdHostHeaders() {
+		return prodHostHeaders;
+	}
+
+	/**
+	 * @param prodHostHeaders the prodHostHeaders to set
+	 */
+	public void setProdHostHeaders(String prodHostHeaders) {
+		this.prodHostHeaders = prodHostHeaders;
+	}
+
+	/**
+	 * @return the stageHostHeaders
+	 */
+	public String getStageHostHeaders() {
+		return stageHostHeaders;
+	}
+
+	/**
+	 * @param stageHostHeaders the stageHostHeaders to set
+	 */
+	public void setStageHostHeaders(String stageHostHeaders) {
+		this.stageHostHeaders = stageHostHeaders;
+	}
+
+	/**
+	 * @return the prodHostHeadersApi
+	 */
+	public String getProdHostHeadersApi() {
+		return prodHostHeadersApi;
+	}
+
+	/**
+	 * @param prodHostHeadersApi the prodHostHeadersApi to set
+	 */
+	public void setProdHostHeadersApi(String prodHostHeadersApi) {
+		this.prodHostHeadersApi = prodHostHeadersApi;
+	}
+
+	/**
+	 * @return the prodHostHeadersCs
+	 */
+	public String getProdHostHeadersCs() {
+		return prodHostHeadersCs;
+	}
+
+	/**
+	 * @param prodHostHeadersCs the prodHostHeadersCs to set
+	 */
+	public void setProdHostHeadersCs(String prodHostHeadersCs) {
+		this.prodHostHeadersCs = prodHostHeadersCs;
+	}
+
+	/**
+	 * @return the prodHostHeadersStore
+	 */
+	public String getProdHostHeadersStore() {
+		return prodHostHeadersStore;
+	}
+
+	/**
+	 * @param prodHostHeadersStore the prodHostHeadersStore to set
+	 */
+	public void setProdHostHeadersStore(String prodHostHeadersStore) {
+		this.prodHostHeadersStore = prodHostHeadersStore;
+	}
+
+	/**
+	 * @return the prodHostHeadersAsset1
+	 */
+	public String getProdHostHeadersAsset1() {
+		return prodHostHeadersAsset1;
+	}
+
+	/**
+	 * @param prodHostHeadersAsset1 the prodHostHeadersAsset1 to set
+	 */
+	public void setProdHostHeadersAsset1(String prodHostHeadersAsset1) {
+		this.prodHostHeadersAsset1 = prodHostHeadersAsset1;
+	}
+
+	/**
+	 * @return the prodHostHeadersAsset2
+	 */
+	public String getProdHostHeadersAsset2() {
+		return prodHostHeadersAsset2;
+	}
+
+	/**
+	 * @param prodHostHeadersAsset2 the prodHostHeadersAsset2 to set
+	 */
+	public void setProdHostHeadersAsset2(String prodHostHeadersAsset2) {
+		this.prodHostHeadersAsset2 = prodHostHeadersAsset2;
+	}
+
+	/**
+	 * @return the akamaiAsset1
+	 */
+	public String getAkamaiAsset1() {
+		return akamaiAsset1;
+	}
+
+	/**
+	 * @param akamaiAsset1 the akamaiAsset1 to set
+	 */
+	public void setAkamaiAsset1(String akamaiAsset1) {
+		this.akamaiAsset1 = akamaiAsset1;
 	}
 
 

@@ -46,7 +46,8 @@ public class GtmDetailsController {
 		log.info("base64Creds - " + base64Creds);
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Basic " + base64Creds);
+		//headers.set("Authorization", "Basic " + base64Creds);
+		headers.set("Authorization", "Basic " + "d2NzYXV0aGludmFsaWRhdGlvbnNlcnZpY2VhY2NvdW50OkZSM18yMT1iYzI3QEc");
 		headers.set("Accept", "application/json");
 		headers.set("Content-Type", "application/json");
 
