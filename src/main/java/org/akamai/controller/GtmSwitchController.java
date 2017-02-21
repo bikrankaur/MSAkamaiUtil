@@ -79,7 +79,7 @@ public class GtmSwitchController {
 		String[] gtmValue = ratio.split(":");
 		List<String> list = Arrays.asList(gtmValue);
 		if (env.equalsIgnoreCase("stage")) {
-			livenessTests.setHostHeader("www.stage.marksandspencer.com");
+			livenessTests.setHostHeader(configObj.getStageHostHeaders());
 			livenessTestsList.add(livenessTests);
 			properties.setLivenessTests(livenessTestsList);
 			String[] domain1 = domain.split(",");
@@ -175,7 +175,7 @@ public class GtmSwitchController {
 			String[] domain1 = domain.split(",");
 			for (String api : domain1) {
 				if (api.equalsIgnoreCase("commerceapi")) {
-					livenessTests.setHostHeader("commerce-api.beta.marksandspencer.com");
+					livenessTests.setHostHeader(configObj.getProdHostHeadersApi());
 					livenessTestsList.add(livenessTests);
 					properties.setLivenessTests(livenessTestsList);
 
@@ -194,7 +194,7 @@ public class GtmSwitchController {
 					gtm = akamaiHelper.invokeApi(entity, restTemplate, configObj.getAkamaiCommerceApi(),
 							HttpMethod.PUT);
 				} else if (api.equalsIgnoreCase("cs")) {
-					livenessTests.setHostHeader("cs.beta.marksandspencer.com");
+					livenessTests.setHostHeader(configObj.getProdHostHeadersCs());
 					livenessTestsList.add(livenessTests);
 					properties.setLivenessTests(livenessTestsList);
 					final List<TrafficTargets> trafficList = new ArrayList<TrafficTargets>();
@@ -210,7 +210,7 @@ public class GtmSwitchController {
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
 					gtm1 = akamaiHelper.invokeApi(entity, restTemplate, configObj.getAkamaiCs(), HttpMethod.PUT);
 				} else if (api.equalsIgnoreCase("store")) {
-					livenessTests.setHostHeader("store.beta.marksandspencer.com");
+					livenessTests.setHostHeader(configObj.getProdHostHeadersStore());
 					livenessTestsList.add(livenessTests);
 					properties.setLivenessTests(livenessTestsList);
 
@@ -227,7 +227,7 @@ public class GtmSwitchController {
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
 					gtm2 = akamaiHelper.invokeApi(entity, restTemplate, configObj.getAkamaiStore(), HttpMethod.PUT);
 				} else if (api.equalsIgnoreCase("asset1")) {
-					livenessTests.setHostHeader("int-asset1.beta.marksandspencer.com");
+					livenessTests.setHostHeader(configObj.getProdHostHeadersAsset1());
 					livenessTestsList.add(livenessTests);
 					properties.setLivenessTests(livenessTestsList);
 
@@ -244,7 +244,7 @@ public class GtmSwitchController {
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
 					gtm3 = akamaiHelper.invokeApi(entity, restTemplate, configObj.getAkamaiAsset1(), HttpMethod.PUT);
 				} else if (api.equalsIgnoreCase("asset2")) {
-					livenessTests.setHostHeader("int-asset2.beta.marksandspencer.com");
+					livenessTests.setHostHeader(configObj.getProdHostHeadersAsset2());
 					livenessTestsList.add(livenessTests);
 					properties.setLivenessTests(livenessTestsList);
 
@@ -261,7 +261,7 @@ public class GtmSwitchController {
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
 					gtm4 = akamaiHelper.invokeApi(entity, restTemplate, configObj.getAkamaiAsset2(), HttpMethod.PUT);
 				} else if (api.equalsIgnoreCase("www")) {
-					livenessTests.setHostHeader("www.beta.marksandspencer.com");
+					livenessTests.setHostHeader(configObj.getProdHostHeaders());
 					livenessTestsList.add(livenessTests);
 					properties.setLivenessTests(livenessTestsList);
 
@@ -278,7 +278,7 @@ public class GtmSwitchController {
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
 					gtm5 = akamaiHelper.invokeApi(entity, restTemplate, configObj.getAkamaiWww(), HttpMethod.PUT);
 				} else if (api.equalsIgnoreCase("shopSearch")) {
-					livenessTests.setHostHeader("commerce-api.beta.marksandspencer.com");
+					livenessTests.setHostHeader(configObj.getProdHostHeadersApi());
 					livenessTests.setTestObjectPort(443);
 					livenessTestsList.add(livenessTests);
 					properties.setLivenessTests(livenessTestsList);

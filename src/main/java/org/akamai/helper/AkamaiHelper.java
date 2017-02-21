@@ -4,6 +4,8 @@ import org.akamai.bean.GtmResponse;
 import org.akamai.bean.LivenessTests;
 import org.akamai.bean.Properties;
 import org.akamai.bean.TrafficTargets;
+import org.akamai.configurations.Configurations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -13,16 +15,19 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class AkamaiHelper {
 	
+	@Autowired
+	private Configurations configObj;
+	
 	public GtmResponse setGtmResponse(ResponseEntity<Properties> response1) {
 		GtmResponse gtm = new GtmResponse();
 		gtm.setName(response1.getBody().getName());
 		gtm.setLastModified(response1.getBody().getLastModified());
 		final java.util.List<TrafficTargets> trafficList = response1.getBody().getTrafficTargets();
 		for (final TrafficTargets trafficTargets : trafficList) {
-			if (trafficTargets.getDatacenterId() == 3131) {
+			if (trafficTargets.getDatacenterId() == configObj.getDataCenterH5()) {
 				gtm.setProd(trafficTargets.getWeight());
 			}
-			if (trafficTargets.getDatacenterId() == 3132) {
+			if (trafficTargets.getDatacenterId() == configObj.getDataCenterH8()) {
 				gtm.setBurst(trafficTargets.getWeight());
 			}
 
@@ -37,9 +42,6 @@ public class AkamaiHelper {
 	 * @return
 	 */
 	public GtmResponse invokeApi(HttpEntity<String> entity, RestTemplate restTemplate, String url, HttpMethod httpMethod) {
-		System.out.println(url);
-		System.out.println(httpMethod);
-		System.out.println(entity);
 		ResponseEntity<Properties> apiResponse = restTemplate.exchange(url, httpMethod, entity, Properties.class);
 		GtmResponse gtm = setGtmResponse(apiResponse);
 		return gtm;
