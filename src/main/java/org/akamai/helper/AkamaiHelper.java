@@ -1,5 +1,6 @@
 package org.akamai.helper;
 
+import org.akamai.bean.GtmResources;
 import org.akamai.bean.GtmResponse;
 import org.akamai.bean.LivenessTests;
 import org.akamai.bean.Properties;
@@ -36,6 +37,24 @@ public class AkamaiHelper {
 		return gtm;
 	}
 	
+	public GtmResponse setGtmSwitchResponse(ResponseEntity<GtmResources> response1) {
+		GtmResponse gtm = new GtmResponse();
+		gtm.setName(response1.getBody().getResource().getName());
+		gtm.setLastModified(response1.getBody().getResource().getLastModified());
+		final java.util.List<TrafficTargets> trafficList = response1.getBody().getResource().getTrafficTargets();
+		for (final TrafficTargets trafficTargets : trafficList) {
+			if (trafficTargets.getDatacenterId() == configObj.getDataCenterH5()) {
+				gtm.setProd(trafficTargets.getWeight());
+			}
+			if (trafficTargets.getDatacenterId() == configObj.getDataCenterH8()) {
+				gtm.setBurst(trafficTargets.getWeight());
+			}
+
+		}
+
+		return gtm;
+	}
+	
 	/**
 	 * @param entity
 	 * @param restTemplate
@@ -44,6 +63,18 @@ public class AkamaiHelper {
 	public GtmResponse invokeApi(HttpEntity<String> entity, RestTemplate restTemplate, String url, HttpMethod httpMethod) {
 		ResponseEntity<Properties> apiResponse = restTemplate.exchange(url, httpMethod, entity, Properties.class);
 		GtmResponse gtm = setGtmResponse(apiResponse);
+		return gtm;
+		
+	}
+	
+	/**
+	 * @param entity
+	 * @param restTemplate
+	 * @return
+	 */
+	public GtmResponse invokeApiForGtmChange(HttpEntity<String> entity, RestTemplate restTemplate, String url, HttpMethod httpMethod) {
+		ResponseEntity<GtmResources> apiResponse = restTemplate.exchange(url, httpMethod, entity, GtmResources.class);
+		GtmResponse gtm = setGtmSwitchResponse(apiResponse);
 		return gtm;
 		
 	}

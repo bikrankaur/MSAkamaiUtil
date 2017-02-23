@@ -41,9 +41,6 @@ public class GtmDetailsController {
 		 byte[] plainCredsBytes = plainCreds.getBytes(); byte[]
 		 base64CredsBytes = Base64.getEncoder().encode(plainCredsBytes);
 		 String base64Creds = new String(base64CredsBytes);
-		 
-
-		log.info("base64Creds - " + base64Creds);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Authorization", "Basic " + base64Creds);
