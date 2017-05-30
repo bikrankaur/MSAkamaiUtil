@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import com.google.gson.Gson;
+
 @Component
 public class AkamaiHelper {
 	
@@ -62,6 +64,8 @@ public class AkamaiHelper {
 	 */
 	public GtmResponse invokeApi(HttpEntity<String> entity, RestTemplate restTemplate, String url, HttpMethod httpMethod) {
 		ResponseEntity<Properties> apiResponse = restTemplate.exchange(url, httpMethod, entity, Properties.class);
+		Gson gson = new Gson();
+		System.out.println("Response JSON for gtm: " + gson.toJson(apiResponse));
 		GtmResponse gtm = setGtmResponse(apiResponse);
 		return gtm;
 		

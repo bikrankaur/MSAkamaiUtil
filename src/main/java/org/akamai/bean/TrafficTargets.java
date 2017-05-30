@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class TrafficTargets {
 	
 	private int datacenterId;
-	private String enabled;
+	private boolean enabled;
 	private int weight;
 	private String servers[];
 	/**
@@ -15,12 +15,7 @@ public class TrafficTargets {
 	public int getDatacenterId() {
 		return datacenterId;
 	}
-	public String getEnabled() {
-		return enabled;
-	}
-	public void setEnabled(String enabled) {
-		this.enabled = enabled;
-	}
+	
 	/**
 	 * @param datacenterId the datacenterId to set
 	 */
@@ -50,6 +45,20 @@ public class TrafficTargets {
 	 */
 	public void setServers(String[] servers) {
 		this.servers = servers;
+	}
+
+	/**
+	 * @return the enabled
+	 */
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	/**
+	 * @param enabled the enabled to set
+	 */
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	

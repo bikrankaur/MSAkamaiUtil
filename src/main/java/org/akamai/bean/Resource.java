@@ -60,6 +60,7 @@ public class Resource {
 	public void setLivenessTests(List<LivenessTests> livenessTests) {
 		this.livenessTests = livenessTests;
 	}
+	
 
 	
 	

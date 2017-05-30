@@ -1,7 +1,6 @@
 package org.akamai.controller;
 
 import java.util.ArrayList;
-import java.util.Base64;
 
 import org.akamai.bean.AkamaiResponse;
 import org.akamai.bean.GtmResponse;
@@ -35,15 +34,10 @@ public class GtmDetailsController {
 	
 	@RequestMapping(path="/gtmDetails/{env}")
 	public String getGtmDetails(@PathVariable String env) {
-		String plainCreds = configObj.getAkamaiCreds();
-
 		
-		 byte[] plainCredsBytes = plainCreds.getBytes(); byte[]
-		 base64CredsBytes = Base64.getEncoder().encode(plainCredsBytes);
-		 String base64Creds = new String(base64CredsBytes);
-
+		String Creds = configObj.getAkamaiCreds();
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Basic " + base64Creds);
+		headers.set("Authorization", "Basic " + Creds);
 		headers.set("Accept", "application/json");
 		headers.set("Content-Type", "application/json");
 
@@ -65,6 +59,7 @@ public class GtmDetailsController {
 			gtm3 = akamaiHelper.invokeApi(entity, restTemplate, configObj.getAkamaiStageAsset2(), HttpMethod.GET);
 			gtm4 = akamaiHelper.invokeApi(entity, restTemplate, configObj.getAkamaiStageCs(), HttpMethod.GET);
 			gtm5 = akamaiHelper.invokeApi(entity, restTemplate, configObj.getAkamaiStageStore(), HttpMethod.GET);
+			gtm6 = akamaiHelper.invokeApi(entity, restTemplate, configObj.getAkamaiStageShopSearch(), HttpMethod.GET);
 
 		} else if (env.equalsIgnoreCase("check")) {
 
