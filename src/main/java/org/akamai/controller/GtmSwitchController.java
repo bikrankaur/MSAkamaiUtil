@@ -2,13 +2,12 @@ package org.akamai.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 
 import org.akamai.bean.AkamaiResponse;
 import org.akamai.bean.GtmProperties;
 import org.akamai.bean.GtmResponse;
-import org.akamai.bean.LivenessTests;
+import org.akamai.bean.Properties;
 import org.akamai.bean.TrafficTargets;
 import org.akamai.configurations.Configurations;
 import org.akamai.helper.AkamaiHelper;
@@ -18,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,18 +44,13 @@ public class GtmSwitchController {
 
 	@RequestMapping(path="/setGtmSwitch/{env}", method=RequestMethod.POST)
 	public String changeGtm(@PathVariable String env, @RequestParam String domain, @RequestParam String ratio) {
-		String plainCreds = configObj.getAkamaiCreds();
-
-		byte[] plainCredsBytes = plainCreds.getBytes();
-		byte[] base64CredsBytes = Base64.getEncoder().encode(plainCredsBytes);
-		String base64Creds = new String(base64CredsBytes);
-
-		log.info("base64Creds - " + base64Creds);
+		
+		String Creds = configObj.getAkamaiCreds();
 
 		MultiValueMap<String, String> headerMap = new LinkedMultiValueMap<String, String>(1);
 		headerMap.add("Content-Type", "application/json");
 		headerMap.add("Accept", "application/json");
-		headerMap.add("Authorization", "Basic " + base64Creds);
+		headerMap.add("Authorization", "Basic " + Creds);
 		
 		GtmProperties properties = new GtmProperties();
 		properties.setHandoutMode("normal");
@@ -72,100 +68,52 @@ public class GtmSwitchController {
 		GtmResponse gtm3 = null;
 		GtmResponse gtm4 = null;
 		GtmResponse gtm5 = null;
-		// GtmResponse gtm6 = null;
+		GtmResponse gtm6 = null;
 
-		final List<LivenessTests> livenessTestsList = new ArrayList<LivenessTests>();
-		LivenessTests livenessTests = akamaiHelper.setLivenessTest();
 		String[] gtmValue = ratio.split(":");
 		List<String> list = Arrays.asList(gtmValue);
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Basic " + Creds);
+		headers.set("Accept", "application/json");
+		headers.set("Content-Type", "application/json");
+
+		HttpEntity<String> entity1 = new HttpEntity<String>(headers);
+		
 		if (env.equalsIgnoreCase("stage")) {
-			livenessTests.setHostHeader(configObj.getStageHostHeaders());
-			livenessTestsList.add(livenessTests);
-			properties.setLivenessTests(livenessTestsList);
 			String[] domain1 = domain.split(",");
 			for (String api : domain1) {
 				if (api.equalsIgnoreCase("commerceapi")) {
-					final List<TrafficTargets> trafficList = new ArrayList<TrafficTargets>();
-					String serverH5 = configObj.getStagetargetServerCommerceApiH5();
-					String serverH8 = configObj.getStagetargetServerCommerceApiH8();
-					TrafficTargets trafficTargets = setTrafficTargets(3131, Integer.parseInt(list.get(0)), serverH5);
-					TrafficTargets trafficTargets1 = setTrafficTargets(3132, Integer.parseInt(list.get(1)), serverH8);
-					trafficList.add(trafficTargets);
-					trafficList.add(trafficTargets1);
-					properties.setTrafficTargets(trafficList);
-					properties.setName("stage.commerce-api");
-					String requestBody = gson.toJson(properties);
+					String requestBody = setRequestBody(properties, gson, restTemplate, list, entity1,configObj.getAkamaiStageCommerceApi());
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
 					gtm = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiStageCommerceApi(),
 							HttpMethod.PUT);
 				} else if (api.equalsIgnoreCase("cs")) {
-					final List<TrafficTargets> trafficList = new ArrayList<TrafficTargets>();
-					String serverH5 = configObj.getStagetargetServerCsH5();
-					String serverH8 = configObj.getStagetargetServerCsH8();
-					TrafficTargets trafficTargets = setTrafficTargets(3131, Integer.parseInt(list.get(0)), serverH5);
-					TrafficTargets trafficTargets1 = setTrafficTargets(3132, Integer.parseInt(list.get(1)), serverH8);
-					trafficList.add(trafficTargets);
-					trafficList.add(trafficTargets1);
-					properties.setTrafficTargets(trafficList);
-					properties.setName("stage.cs");
-					String requestBody = gson.toJson(properties);
+					String requestBody = setRequestBody(properties, gson, restTemplate, list, entity1,configObj.getAkamaiStageCs());
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
 					gtm1 = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiStageCs(), HttpMethod.PUT);
 				} else if (api.equalsIgnoreCase("store")) {
-					final List<TrafficTargets> trafficList = new ArrayList<TrafficTargets>();
-					String serverH5 = configObj.getStagetargetServerStoreH5();
-					String serverH8 = configObj.getStagetargetServerStoreH8();
-					TrafficTargets trafficTargets = setTrafficTargets(3131, Integer.parseInt(list.get(0)), serverH5);
-					TrafficTargets trafficTargets1 = setTrafficTargets(3132, Integer.parseInt(list.get(1)), serverH8);
-					trafficList.add(trafficTargets);
-					trafficList.add(trafficTargets1);
-					properties.setTrafficTargets(trafficList);
-					properties.setName("stage.store");
-					String requestBody = gson.toJson(properties);
+					String requestBody = setRequestBody(properties, gson, restTemplate, list, entity1,configObj.getAkamaiStageStore());
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
 					gtm2 = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiStageStore(),
 							HttpMethod.PUT);
 				} else if (api.equalsIgnoreCase("Asset1")) {
-					final List<TrafficTargets> trafficList = new ArrayList<TrafficTargets>();
-					String serverH5 = configObj.getStagetargetServerAsset1H5();
-					String serverH8 = configObj.getStagetargetServerAsset1H8();
-					TrafficTargets trafficTargets = setTrafficTargets(3131, Integer.parseInt(list.get(0)), serverH5);
-					TrafficTargets trafficTargets1 = setTrafficTargets(3132, Integer.parseInt(list.get(1)), serverH8);
-					trafficList.add(trafficTargets);
-					trafficList.add(trafficTargets1);
-					properties.setTrafficTargets(trafficList);
-					properties.setName("stage.int-asset1");
-					String requestBody = gson.toJson(properties);
+					String requestBody = setRequestBody(properties, gson, restTemplate, list, entity1,configObj.getAkamaiStageAsset1());
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
 					gtm3 = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiStageAsset1(),
 							HttpMethod.PUT);
 				} else if (api.equalsIgnoreCase("Asset2")) {
-					final List<TrafficTargets> trafficList = new ArrayList<TrafficTargets>();
-					String serverH5 = configObj.getStagetargetServerAsset2H5();
-					String serverH8 = configObj.getStagetargetServerAsset2H8();
-					TrafficTargets trafficTargets = setTrafficTargets(3131, Integer.parseInt(list.get(0)), serverH5);
-					TrafficTargets trafficTargets1 = setTrafficTargets(3132, Integer.parseInt(list.get(1)), serverH8);
-					trafficList.add(trafficTargets);
-					trafficList.add(trafficTargets1);
-					properties.setTrafficTargets(trafficList);
-					properties.setName("stage.int-asset2");
-					String requestBody = gson.toJson(properties);
+					String requestBody = setRequestBody(properties, gson, restTemplate, list, entity1,configObj.getAkamaiStageAsset2());
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
 					gtm4 = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiStageAsset2(),
 							HttpMethod.PUT);
 				} else if (api.equalsIgnoreCase("www")) {
-					final List<TrafficTargets> trafficList = new ArrayList<TrafficTargets>();
-					String serverH5 = configObj.getStagetargetServerStageH5();
-					String serverH8 = configObj.getStagetargetServerStageH8();
-					TrafficTargets trafficTargets = setTrafficTargets(3131, Integer.parseInt(list.get(0)), serverH5);
-					TrafficTargets trafficTargets1 = setTrafficTargets(3132, Integer.parseInt(list.get(1)), serverH8);
-					trafficList.add(trafficTargets);
-					trafficList.add(trafficTargets1);
-					properties.setTrafficTargets(trafficList);
-					properties.setName("stage.www");
-					String requestBody = gson.toJson(properties);
+					String requestBody = setRequestBody(properties, gson, restTemplate, list, entity1,configObj.getAkamaiStage());
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
 					gtm5 = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiStage(), HttpMethod.PUT);
+				} else if (api.equalsIgnoreCase("shopSearch")) {
+					String requestBody = setRequestBody(properties, gson, restTemplate, list, entity1,configObj.getAkamaiStageShopSearch());
+					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
+					gtm6 = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiStageShopSearch(), HttpMethod.PUT);
 				}
 
 			}
@@ -175,127 +123,37 @@ public class GtmSwitchController {
 			String[] domain1 = domain.split(",");
 			for (String api : domain1) {
 				if (api.equalsIgnoreCase("commerceapi")) {
-					livenessTests.setHostHeader(configObj.getProdHostHeadersApi());
-					livenessTestsList.add(livenessTests);
-					properties.setLivenessTests(livenessTestsList);
-
-					final List<TrafficTargets> trafficList = new ArrayList<TrafficTargets>();
-					String serverH5 = configObj.getTargetServerCommerceApiH5();
-					String serverH8 = configObj.getTargetServerCommerceApiH8();
-					TrafficTargets trafficTargets = setTrafficTargets(3131, Integer.parseInt(list.get(0)), serverH5);
-					TrafficTargets trafficTargets1 = setTrafficTargets(3132, Integer.parseInt(list.get(1)), serverH8);
-					trafficList.add(trafficTargets);
-					trafficList.add(trafficTargets1);
-					properties.setTrafficTargets(trafficList);
-					properties.setName("commerce-api");
-
-					String requestBody = gson.toJson(properties);
+					String requestBody = setRequestBody(properties, gson, restTemplate, list, entity1,configObj.getAkamaiCommerceApi());
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
 					gtm = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiCommerceApi(),
 							HttpMethod.PUT);
 				} else if (api.equalsIgnoreCase("cs")) {
-					livenessTests.setHostHeader(configObj.getProdHostHeadersCs());
-					livenessTestsList.add(livenessTests);
-					properties.setLivenessTests(livenessTestsList);
-					final List<TrafficTargets> trafficList = new ArrayList<TrafficTargets>();
-					String serverH5 = configObj.getTargetServerCsH5();
-					String serverH8 = configObj.getTargetServerCsH8();
-					TrafficTargets trafficTargets = setTrafficTargets(3131, Integer.parseInt(list.get(0)), serverH5);
-					TrafficTargets trafficTargets1 = setTrafficTargets(3132, Integer.parseInt(list.get(1)), serverH8);
-					trafficList.add(trafficTargets);
-					trafficList.add(trafficTargets1);
-					properties.setTrafficTargets(trafficList);
-					properties.setName("cs");
-					String requestBody = gson.toJson(properties);
+					String requestBody = setRequestBody(properties, gson, restTemplate, list, entity1,configObj.getAkamaiCs());
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
 					gtm1 = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiCs(), HttpMethod.PUT);
 				} else if (api.equalsIgnoreCase("store")) {
-					livenessTests.setHostHeader(configObj.getProdHostHeadersStore());
-					livenessTestsList.add(livenessTests);
-					properties.setLivenessTests(livenessTestsList);
-
-					final List<TrafficTargets> trafficList = new ArrayList<TrafficTargets>();
-					String serverH5 = configObj.getTargetServerStoreH5();
-					String serverH8 = configObj.getTargetServerStoreH8();
-					TrafficTargets trafficTargets = setTrafficTargets(3131, Integer.parseInt(list.get(0)), serverH5);
-					TrafficTargets trafficTargets1 = setTrafficTargets(3132, Integer.parseInt(list.get(1)), serverH8);
-					trafficList.add(trafficTargets);
-					trafficList.add(trafficTargets1);
-					properties.setTrafficTargets(trafficList);
-					properties.setName("store");
-					String requestBody = gson.toJson(properties);
+					String requestBody = setRequestBody(properties, gson, restTemplate, list, entity1,configObj.getAkamaiStore());
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
-					gtm2 = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiStore(), HttpMethod.PUT);
+					gtm2 = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiStore(),
+							HttpMethod.PUT);
 				} else if (api.equalsIgnoreCase("asset1")) {
-					livenessTests.setHostHeader(configObj.getProdHostHeadersAsset1());
-					livenessTestsList.add(livenessTests);
-					properties.setLivenessTests(livenessTestsList);
-
-					final List<TrafficTargets> trafficList = new ArrayList<TrafficTargets>();
-					String serverH5 = configObj.getTargetServerAsset1H5();
-					String serverH8 = configObj.getTargetServerAsset1H8();
-					TrafficTargets trafficTargets = setTrafficTargets(3131, Integer.parseInt(list.get(0)), serverH5);
-					TrafficTargets trafficTargets1 = setTrafficTargets(3132, Integer.parseInt(list.get(1)), serverH8);
-					trafficList.add(trafficTargets);
-					trafficList.add(trafficTargets1);
-					properties.setTrafficTargets(trafficList);
-					properties.setName("int-asset1");
-					String requestBody = gson.toJson(properties);
+					String requestBody = setRequestBody(properties, gson, restTemplate, list, entity1,configObj.getAkamaiAsset1());
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
-					gtm3 = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiAsset1(), HttpMethod.PUT);
+					gtm3 = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiAsset1(),
+							HttpMethod.PUT);
 				} else if (api.equalsIgnoreCase("asset2")) {
-					livenessTests.setHostHeader(configObj.getProdHostHeadersAsset2());
-					livenessTestsList.add(livenessTests);
-					properties.setLivenessTests(livenessTestsList);
-
-					final List<TrafficTargets> trafficList = new ArrayList<TrafficTargets>();
-					String serverH5 = configObj.getTargetServerAsset2H5();
-					String serverH8 = configObj.getTargetServerAsset2H8();
-					TrafficTargets trafficTargets = setTrafficTargets(3131, Integer.parseInt(list.get(0)), serverH5);
-					TrafficTargets trafficTargets1 = setTrafficTargets(3132, Integer.parseInt(list.get(1)), serverH8);
-					trafficList.add(trafficTargets);
-					trafficList.add(trafficTargets1);
-					properties.setTrafficTargets(trafficList);
-					properties.setName("int-asset2");
-					String requestBody = gson.toJson(properties);
+					String requestBody = setRequestBody(properties, gson, restTemplate, list, entity1,configObj.getAkamaiAsset2());
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
-					gtm4 = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiAsset2(), HttpMethod.PUT);
+					gtm4 = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiAsset2(),
+							HttpMethod.PUT);
 				} else if (api.equalsIgnoreCase("www")) {
-					livenessTests.setHostHeader(configObj.getProdHostHeaders());
-					livenessTestsList.add(livenessTests);
-					properties.setLivenessTests(livenessTestsList);
-
-					final List<TrafficTargets> trafficList = new ArrayList<TrafficTargets>();
-					String serverH5 = configObj.getTargetServerH5();
-					String serverH8 = configObj.getTargetServerH8();
-					TrafficTargets trafficTargets = setTrafficTargets(3131, Integer.parseInt(list.get(0)), serverH5);
-					TrafficTargets trafficTargets1 = setTrafficTargets(3132, Integer.parseInt(list.get(1)), serverH8);
-					trafficList.add(trafficTargets);
-					trafficList.add(trafficTargets1);
-					properties.setTrafficTargets(trafficList);
-					properties.setName("www");
-					String requestBody = gson.toJson(properties);
+					String requestBody = setRequestBody(properties, gson, restTemplate, list, entity1,configObj.getAkamaiWww());
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
 					gtm5 = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiWww(), HttpMethod.PUT);
 				} else if (api.equalsIgnoreCase("shopSearch")) {
-					livenessTests.setHostHeader(configObj.getProdHostHeadersApi());
-					livenessTests.setTestObjectPort(443);
-					livenessTestsList.add(livenessTests);
-					properties.setLivenessTests(livenessTestsList);
-
-					final List<TrafficTargets> trafficList = new ArrayList<TrafficTargets>();
-					String serverH5 = configObj.getTargetServerShopSearchH5();
-					String serverH8 = configObj.getTargetServerShopSearchH8();
-					TrafficTargets trafficTargets = setTrafficTargets(3131, Integer.parseInt(list.get(0)), serverH5);
-					TrafficTargets trafficTargets1 = setTrafficTargets(3132, Integer.parseInt(list.get(1)), serverH8);
-					trafficList.add(trafficTargets);
-					trafficList.add(trafficTargets1);
-					properties.setTrafficTargets(trafficList);
-					properties.setName("prod.shopsearch");
-					String requestBody = gson.toJson(properties);
+					String requestBody = setRequestBody(properties, gson, restTemplate, list, entity1,configObj.getAkamaiShopSearch());
 					HttpEntity<String> entity = new HttpEntity<String>(requestBody, headerMap);
-					gtm5 = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiShopSearch(),
-							HttpMethod.PUT);
+					gtm6 = akamaiHelper.invokeApiForGtmChange(entity, restTemplate, configObj.getAkamaiShopSearch(), HttpMethod.PUT);
 				}
 
 			}
@@ -309,6 +167,7 @@ public class GtmSwitchController {
 		GtmResponseList.add(gtm3);
 		GtmResponseList.add(gtm4);
 		GtmResponseList.add(gtm5);
+		GtmResponseList.add(gtm6);
 		AkamaiResponse akamaiResponse = new AkamaiResponse();
 		akamaiResponse.setEnviornment(env);
 		akamaiResponse.setResponse(GtmResponseList);
@@ -323,6 +182,51 @@ public class GtmSwitchController {
 
 
 	/**
+	 * @param properties
+	 * @param gson
+	 * @param restTemplate
+	 * @param list
+	 * @param entity1
+	 * @return
+	 */
+	private String setRequestBody(GtmProperties properties, Gson gson, RestTemplate restTemplate, List<String> list,
+			HttpEntity<String> entity1, String url) {
+		TrafficTargets trafficTargets1 = null;
+		TrafficTargets trafficTargets2 = null;
+		ResponseEntity<Properties> apiResponse = restTemplate.exchange(url, HttpMethod.GET, entity1, Properties.class);
+		String apiresponse = gson.toJson(apiResponse);
+		log.info("apiresponse>>>>>>>>>>>>>"+apiresponse);
+		final List<TrafficTargets> trafficTargetList = apiResponse.getBody().getTrafficTargets();
+		properties.setLivenessTests(apiResponse.getBody().getLivenessTests());
+		for (final TrafficTargets trafficTargets : trafficTargetList) {
+			if (trafficTargets.getDatacenterId() == configObj.getDataCenterH5()) {
+				String[] Servers = trafficTargets.getServers();
+				String serverH5 = Servers[0];
+				trafficTargets1 = setTrafficTargets(3131, Integer.parseInt(list.get(0)), serverH5);
+			}
+			if (trafficTargets.getDatacenterId() == configObj.getDataCenterH8()) {
+				String[] Servers = trafficTargets.getServers();
+				String serverH8 = Servers[0];
+				trafficTargets2 = setTrafficTargets(3132, Integer.parseInt(list.get(1)), serverH8);
+			}
+
+		}
+		final List<TrafficTargets> trafficList = new ArrayList<TrafficTargets>();
+		trafficList.add(trafficTargets1);
+		trafficList.add(trafficTargets2);
+		properties.setTrafficTargets(trafficList);
+		properties.setName(apiResponse.getBody().getName());
+		properties.setDynamicTTL(apiResponse.getBody().getDynamicTTL());
+		properties.setIpv6(apiResponse.getBody().isIpv6());
+		properties.setUseComputedTargets(apiResponse.getBody().isUseComputedTargets());
+		String requestBody = gson.toJson(properties);
+		log.info("requestBody>>>>>>>>>>"+requestBody);
+		return requestBody;
+	}
+
+
+
+	/**
 	 * @param list
 	 * @param trafficTargets
 	 */
@@ -330,7 +234,7 @@ public class GtmSwitchController {
 		TrafficTargets trafficTargets = new TrafficTargets();
 		trafficTargets.setDatacenterId(hall);
 		trafficTargets.setWeight(weight);
-		trafficTargets.setEnabled("true");
+		trafficTargets.setEnabled(true);
 		String servers[] = {serverValue};
 		trafficTargets.setServers(servers);
 		return trafficTargets;

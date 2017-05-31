@@ -73,6 +73,8 @@ public class Configurations {
 	private String prodHostHeadersStore;
 	private String prodHostHeadersAsset1;
 	private String prodHostHeadersAsset2;
+	
+	private String akamaiStageShopSearch;
 
 	public String getStagetargetServerCsH5() {
 		return StagetargetServerCsH5;
@@ -740,6 +742,20 @@ public class Configurations {
 	 */
 	public void setAkamaiAsset1(String akamaiAsset1) {
 		this.akamaiAsset1 = akamaiAsset1;
+	}
+
+	/**
+	 * @return the akamaiStageShopSearch
+	 */
+	public String getAkamaiStageShopSearch() {
+		return akamaiStageShopSearch;
+	}
+
+	/**
+	 * @param akamaiStageShopSearch the akamaiStageShopSearch to set
+	 */
+	public void setAkamaiStageShopSearch(String akamaiStageShopSearch) {
+		this.akamaiStageShopSearch = akamaiStageShopSearch;
 	}
 
 

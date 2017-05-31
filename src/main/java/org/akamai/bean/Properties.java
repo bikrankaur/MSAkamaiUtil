@@ -11,6 +11,9 @@ public class Properties {
 	private String name;
 	private List<TrafficTargets> trafficTargets;
 	private List<LivenessTests> livenessTests;
+	private int dynamicTTL;
+	private boolean useComputedTargets;
+	private boolean ipv6;
 	
 	/**
 	 * @return the lastModified
@@ -59,6 +62,42 @@ public class Properties {
 	 */
 	public void setLivenessTests(List<LivenessTests> livenessTests) {
 		this.livenessTests = livenessTests;
+	}
+	/**
+	 * @return the dynamicTTL
+	 */
+	public int getDynamicTTL() {
+		return dynamicTTL;
+	}
+	/**
+	 * @param dynamicTTL the dynamicTTL to set
+	 */
+	public void setDynamicTTL(int dynamicTTL) {
+		this.dynamicTTL = dynamicTTL;
+	}
+	/**
+	 * @return the useComputedTargets
+	 */
+	public boolean isUseComputedTargets() {
+		return useComputedTargets;
+	}
+	/**
+	 * @param useComputedTargets the useComputedTargets to set
+	 */
+	public void setUseComputedTargets(boolean useComputedTargets) {
+		this.useComputedTargets = useComputedTargets;
+	}
+	/**
+	 * @return the ipv6
+	 */
+	public boolean isIpv6() {
+		return ipv6;
+	}
+	/**
+	 * @param ipv6 the ipv6 to set
+	 */
+	public void setIpv6(boolean ipv6) {
+		this.ipv6 = ipv6;
 	}
 
 	
